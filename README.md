@@ -1,7 +1,6 @@
 # Gizero Dashboard
 
 Dashboard operativa per il monitoraggio della rete IoT LoRaWAN Gizero.
-Sviluppata nell'ambito della tesi magistrale in Informatica presso l'Università di Verona.
 
 ## Funzionalità
 
