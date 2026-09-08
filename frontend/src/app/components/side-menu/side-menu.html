@@ -1,0 +1,68 @@
+<nav class="side-menu">
+  @for (voce of voci; track voce.id) {
+    <div class="menu-item"
+      [class.attivo]="modalitaAttiva === voce.id"
+      (click)="seleziona(voce.id)">
+      <div class="menu-testo">
+        <span class="menu-label">{{ voce.label }}</span>
+        <span class="menu-desc">{{ voce.descrizione }}</span>
+      </div>
+    </div>
+  }
+
+  <div class="menu-legenda">
+    <div class="legenda-title">Legenda</div>
+
+@if (modalitaAttiva === 'radio') {
+  <div class="legenda-item">
+    <span class="dot verde"></span> Ottimo (RSSI &gt; −90, SF ≤ 8)
+  </div>
+  <div class="legenda-item">
+    <span class="dot giallo"></span> Attenzione (RSSI −90/−100)
+  </div>
+  <div class="legenda-item">
+    <span class="dot arancio"></span> Degradato (RSSI −100/−110)
+  </div>
+  <div class="legenda-item">
+    <span class="dot rosso"></span> Critico (RSSI &lt; −110, SF ≥ 11)
+  </div>
+  <div class="legenda-item">
+    <span class="dot grigio"></span> Timeout
+  </div>
+}
+
+@if (modalitaAttiva === 'batteria') {
+  <div class="legenda-item">
+    <span class="dot verde"></span> Ottimo (&gt; 50%)
+  </div>
+  <div class="legenda-item">
+    <span class="dot giallo"></span> Buono (20–50%)
+  </div>
+  <div class="legenda-item">
+    <span class="dot arancio"></span> Bassa (10–20%)
+  </div>
+  <div class="legenda-item">
+    <span class="dot rosso"></span> Critica (&lt; 10%)
+  </div>
+  <div class="legenda-item">
+    <span class="dot grigio-chiaro"></span> N/D
+  </div>
+}
+@if (modalitaAttiva === 'struttura') {
+  <div class="legenda-item">
+    <span class="dot verde"></span> Ridondante (≥ 2 GW)
+  </div>
+  <div class="legenda-item">
+    <span class="dot rosso"></span> Fragile (1 GW)
+  </div>
+  <div class="legenda-item">
+    <span class="dot grigio"></span> Timeout / No GW
+  </div>
+}
+
+<div class="legenda-separatore"></div>
+<div class="legenda-item"><span class="dot grigio"></span> Nodo timeout</div>
+<div class="legenda-item"><span class="dot grigio-chiaro"></span> Nodo</div>
+<div class="legenda-item"><span class="triangolo blu"></span> Gateway</div>
+  </div>
+</nav>

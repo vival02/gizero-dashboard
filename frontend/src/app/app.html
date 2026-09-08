@@ -1,0 +1,27 @@
+<app-header
+  [layers]="layers"
+  (layerChange)="onLayerChange($event)"
+  (menuToggle)="onMenuToggle()" (timeoutChange)="onTimeoutChange($event)">>
+
+</app-header>
+<div class="layout">
+<app-side-menu
+  [aperto]="menuAperto"
+  [class.menu-mobile-aperto]="menuAperto"
+  (click)="$event.stopPropagation()"
+  (modalitaChange)="onModalitaChange($event)">
+</app-side-menu>
+ <div class="map-container" (click)="onMapClick()">
+    <app-map
+  [modalita]="modalita"
+  [layers]="layers"
+  [mostraTimeout]="mostraTimeout"
+  (nodoSelezionato)="onNodoSelezionato($event)">
+</app-map>
+  </div>
+  <app-node-panel
+    [nodo]="nodoSelezionato"
+    (chiudi)="nodoSelezionato = null">
+  </app-node-panel>
+
+</div>

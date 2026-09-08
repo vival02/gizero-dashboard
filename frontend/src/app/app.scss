@@ -1,0 +1,31 @@
+.layout {
+  display: flex;
+  height: 100vh;
+  padding-top: 64px;
+  overflow: hidden;
+  background: #F4F5F7;
+}
+
+.map-container {
+  flex: 1;
+  position: relative;
+}
+
+// Tablet
+@media (max-width: 1024px) {
+  .layout {
+    padding-top: 64px;
+  }
+}
+
+// Mobile
+@media (max-width: 768px) {
+  .layout {
+    padding-top: 56px;
+  }
+}
+app-side-menu.menu-mobile-aperto {
+  @media (max-width: 768px) {
+    left: 0 !important;
+  }
+}

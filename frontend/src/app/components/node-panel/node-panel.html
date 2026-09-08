@@ -1,0 +1,153 @@
+<div class="panel" [class.aperto]="aperto">
+  @if (aperto) {
+    <div class="panel-header">
+      <div class="panel-title">
+        <span class="panel-dot"
+          [style.background]="nodo ? statoColore(nodo.stato) : '#B0BEC5'">
+        </span>
+        Dettaglio nodo
+      </div>
+      <button class="panel-close" (click)="chiudi.emit()">✕</button>
+    </div>
+
+    @if (nodo) {
+      <div class="panel-body">
+
+        <div class="panel-eui">{{ nodo.deveui }}</div>
+
+        @if (nodo.nome) {
+          <div class="panel-nome">{{ nodo.nome }}</div>
+        }
+
+        <div class="panel-stato" [style.color]="statoColore(nodo.stato)">
+          {{ nodo.stato }}
+        </div>
+
+        <div class="sezione-divider"></div>
+
+        <div class="sezione-title">Segnale radio</div>
+
+        @if (nodo.stato !== 'TIMEOUT') {
+          <div class="metric-grid">
+            <div class="metric">
+              <span class="metric-label">RSSI Medio</span>
+              <span class="metric-value"
+                [style.color]="(nodo.rssi_medio ?? 0) <= -110 ? '#E53935' : (nodo.rssi_medio ?? 0) <= -95 ? '#FB8C00' : '#8DC63F'">
+                {{ nodo.rssi_medio != null ? nodo.rssi_medio.toFixed(0) + ' dBm' : 'N/D' }}
+              </span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">SF medio</span>
+              <span class="metric-value"
+                [style.color]="(nodo.sf_medio ?? 0) >= 11 ? '#E53935' : (nodo.sf_medio ?? 0) >= 9 ? '#FB8C00' : '#8DC63F'">
+                {{ nodo.sf_medio != null ? nodo.sf_medio.toFixed(1) : 'N/D' }}
+              </span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">SNR Medio</span>
+              <span class="metric-value">
+                {{ nodo.snr_medio != null ? nodo.snr_medio.toFixed(1) + ' dB' : 'N/D' }}
+              </span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Gateway</span>
+              <span class="metric-value">{{ nodo.n_gateway }}</span>
+            </div>
+          </div>
+        } @else {
+          <span class="nd">Nodo in timeout — nessun dato radio recente</span>
+        }
+
+        <div class="sezione-divider"></div>
+
+        <div class="sezione-title">Batteria</div>
+
+        @if (nodo.batteria_pct != null) {
+          <div class="batt-row">
+            <div class="batt-bar-wrap">
+              <div class="batt-bar"
+                [style.width.%]="nodo.batteria_pct"
+                [style.background]="battColore(nodo.batteria_pct)">
+              </div>
+            </div>
+            <span class="batt-pct" [style.color]="battColore(nodo.batteria_pct)">
+              {{ nodo.batteria_pct.toFixed(0) }}%
+            </span>
+          </div>
+        } @else {
+          <span class="nd">Dati non disponibili</span>
+        }
+
+        @if (nodo.giorni_batteria != null) {
+          <div class="batt-giorni">~{{ nodo.giorni_batteria }} giorni residui</div>
+        }
+
+        <div class="sezione-divider"></div>
+
+        <div class="sezione-title">Indici</div>
+
+        @if (nodo.indice_qualita != null) {
+          <div class="indice">
+            <div class="indice-header">
+              <span class="indice-label">Qualità corrente</span>
+              <span class="indice-val">{{ nodo.indice_qualita.toFixed(2) }}</span>
+            </div>
+            <div class="indice-bar-wrap">
+              <div class="indice-bar"
+                [style.width.%]="indiceBar(nodo.indice_qualita)"
+                [style.background]="indiceColore(nodo.indice_qualita)">
+              </div>
+            </div>
+          </div>
+          <div class="indice">
+            <div class="indice-header">
+              <span class="indice-label">Fragilità strutturale</span>
+              <span class="indice-val">{{ nodo.indice_fragilita != null ? nodo.indice_fragilita.toFixed(2) : 'N/D' }}</span>
+            </div>
+            <div class="indice-bar-wrap">
+              <div class="indice-bar"
+                [style.width.%]="indiceBar(nodo.indice_fragilita)"
+                [style.background]="indiceColore(nodo.indice_fragilita)">
+              </div>
+            </div>
+          </div>
+          <div class="indice">
+            <div class="indice-header">
+              <span class="indice-label">Tendenza evolutiva</span>
+              <span class="indice-val">{{ nodo.indice_tendenza != null ? nodo.indice_tendenza.toFixed(2) : 'N/D' }}</span>
+            </div>
+            <div class="indice-bar-wrap">
+              <div class="indice-bar"
+                [style.width.%]="indiceBar(nodo.indice_tendenza)"
+                [style.background]="indiceColore(nodo.indice_tendenza)">
+              </div>
+            </div>
+          </div>
+        } @else {
+          <span class="nd">Indici non ancora calcolati</span>
+        }
+
+        @if (gateway.length > 0) {
+          <div class="sezione-divider"></div>
+          <div class="sezione-title">Gateway collegati</div>
+
+          @for (gw of gateway; track gw.gweui) {
+            <div class="gw-item">
+              <div class="gw-eui">{{ gw.nome }}</div>
+<div class="gw-eui" style="font-size:12px;">{{ gw.gweui }}</div>
+              <div class="gw-stats">
+                <span>RSSI {{ gw.rssi_medio != null ? (gw.rssi_medio | number:'1.0-0') + ' dBm' : 'N/D' }}</span>
+                <span>{{ gw.n_pacchetti }} pkt</span>
+              </div>
+            </div>
+          }
+        }
+
+      </div>
+    }
+
+    @if (caricamento) {
+      <div class="panel-loading">Caricamento...</div>
+    }
+  }
+</div>

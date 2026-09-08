@@ -1,0 +1,62 @@
+<header class="header">
+  <div class="header-brand">
+    <span class="brand-dot"></span>
+    <span class="brand-name">Gizero Dashboard</span>
+  </div>
+
+  <button class="hamburger" (click)="toggleMenu()">☰</button>
+
+  <div class="header-right">
+  @if (stats) {
+  <div class="header-stats">
+    <div class="stat totale">
+      <span class="stat-value">{{ stats.nodi.totale }}</span>
+      <span class="stat-label"> Nodi totali </span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-value">{{ stats.nodi.attivi }}</span>
+      <span class="stat-label"> Nodi attivi </span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat gateway">
+      <span class="stat-value">{{ stats.gateway.totale }}</span>
+      <span class="stat-label"> Gateway </span>
+    </div>
+    <!-- 
+    <div class="stat-divider"></div>
+    <div class="stat critico">
+      <span class="stat-value">{{ stats.nodi.critici }}</span>
+      <span class="stat-label">Critici</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat attenzione">
+      <span class="stat-value">{{ stats.nodi.attenzione }}</span>
+      <span class="stat-label">Attenzione</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat batteria" [class.batt-critica]="stats.batteria_critici > 0">
+      <span class="stat-value">🔋 {{ stats.batteria_critici }}</span>
+      <span class="stat-label">Batteria critica</span>
+    </div>-->
+  </div> 
+} @else {
+  <span class="loading">Caricamento...</span>
+}
+
+    <div class="layer-toggle">
+      <button class="toggle-btn" [class.attivo]="layers.nodi" (click)="toggleNodi()">
+        <span class="toggle-dot"></span>
+        Nodi Attivi
+      </button>
+      
+        <button class="toggle-btn timeout-btn" [class.attivo]="mostraTimeout" (click)="toggleTimeout()">
+    <span class="toggle-dot grigio"></span>
+    Nodi Timeout
+  </button><button class="toggle-btn" [class.attivo]="layers.gateway" (click)="toggleGateway()">
+        <span class="toggle-triangolo"></span>
+        Gateway
+      </button>
+    </div>
+  </div>
+</header>
