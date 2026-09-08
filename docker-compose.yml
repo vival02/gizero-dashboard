@@ -1,0 +1,71 @@
+services:
+
+  # ─── DATABASE ───────────────────────────────────────────────
+  db:
+    image: postgres:16
+    container_name: gizero_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"          # esposto solo per debug locale
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── COLLECTOR ──────────────────────────────────────────────
+  collector:
+    build: ./collector
+    container_name: gizero_collector
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      RESIOT_TOKEN: ${RESIOT_TOKEN}
+      RESIOT_BASE_URL: ${RESIOT_BASE_URL}
+    volumes:
+      - data_volume:/app/data   # CSV/JSON condivisi con backend
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ─── BACKEND ────────────────────────────────────────────────
+  backend:
+    build: ./backend
+    container_name: gizero_backend
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - data_volume:/app/data   # legge i CSV/JSON del collector
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ─── FRONTEND ───────────────────────────────────────────────
+  frontend:
+    build: ./frontend
+    container_name: gizero_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  data_volume:        # volume condiviso collector ↔ backend

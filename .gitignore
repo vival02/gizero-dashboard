@@ -1,0 +1,20 @@
+# Ambiente
+.env
+
+# Dati sensibili
+backend/data/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Node
+node_modules/
+dist/
+
+# Angular
+.angular/
+
+# Docker
+*.log
