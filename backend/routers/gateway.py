@@ -8,7 +8,7 @@ DATA = os.path.join(os.path.dirname(__file__), "..", "data")
 
 @router.get("/")
 def get_gateway():
-    with open(os.path.join(DATA, "gateway_positions.json"), "r") as f:
+    with open(os.path.join(DATA, "gateway_positions.json"), "r", encoding="utf-8", errors="ignore") as f:
         gw_pos = json.load(f)
 
     gateway_list = []

@@ -3,7 +3,7 @@ import {
   OnChanges, ElementRef, ViewChild, afterNextRender, NgZone, ChangeDetectorRef
 } from '@angular/core';
 import * as L from 'leaflet';
-import 'leaflet.markercluster';
+(window as any).L = L;
 import { ApiService, Nodo, Gateway } from '../../services/api';
 import { LayerVisibility } from '../header/header';
 
@@ -26,16 +26,16 @@ export class Map implements OnChanges {
   @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef;
 
   private map!: L.Map;
-  private nodoCluster!: L.MarkerClusterGroup;
   private gatewayLayer = L.layerGroup();
   private popupTimeout: any;
-
+  private nodoCluster!: any;
   nodi: Nodo[] = [];
   gateway: Gateway[] = [];
   caricamento = true;
-
-  constructor(private api: ApiService, private zone: NgZone, private cdr: ChangeDetectorRef) {
-    afterNextRender(() => {
+  
+constructor(private api: ApiService, private zone: NgZone, private cdr: ChangeDetectorRef) {
+    afterNextRender(async () => {
+      await import('leaflet.markercluster');
       this.inizializzaMappa();
       this.caricaDati();
     });
