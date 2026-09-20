@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS snapshot_radio (
     ts_raccolta     TIMESTAMP NOT NULL,
     deveui          VARCHAR(16),
     gweui           VARCHAR(16),
+    data_pkt        TIMESTAMP,
     rssi            DOUBLE PRECISION,
     snr             DOUBLE PRECISION,
     sf              INTEGER,
