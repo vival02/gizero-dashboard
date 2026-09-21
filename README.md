@@ -62,9 +62,10 @@ cp /path/to/usb/data/* backend/data/
 
 I file necessari sono:
 - `node_positions.json` — coordinate dei nodi
-- `gateway_positions.json` — coordinate dei gateway
+- `gateway_positions.json` — coordinate dei gateway (**deve essere in encoding UTF-8**)
 - `nodi_nomi.json` — nomi dei nodi scaricati da ResIOT
-
+> **Attenzione**: se `gateway_positions.json` è stato creato su Windows potrebbe avere encoding non UTF-8 e causare un errore 500. In quel caso riaprirlo e risalvarlo come UTF-8.
+> 
 ### 3. Configura le variabili d'ambiente
 
 Crea il file `.env` nella root del progetto:
