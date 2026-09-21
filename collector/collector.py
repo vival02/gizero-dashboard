@@ -136,6 +136,33 @@ def identifica_marca(nome):
             return marca
     return None
 
+def popola_nodi(conn, session):
+    """Popola la tabella nodi se vuota."""
+    with conn.cursor() as cur:
+        cur.execute("SELECT COUNT(*) FROM nodi")
+        if cur.fetchone()[0] > 0:
+            return
+    try:
+        r = session.get(f"{BASE_URL}/application/nodes",
+                       headers=HEADERS,
+                       params={"limit": 1000, "offset": 0},
+                       timeout=60)
+        if r.status_code == 200:
+            nodi = r.json().get("result", [])
+            records = [(n.get("devEUI","").upper().strip(),
+                       n.get("name","").strip(), True)
+                      for n in nodi if n.get("devEUI")]
+            with conn.cursor() as cur:
+                execute_values(cur, """
+                    INSERT INTO nodi (deveui, nome, attivo)
+                    VALUES %s
+                    ON CONFLICT (deveui) DO UPDATE SET nome = EXCLUDED.nome
+                """, records)
+            conn.commit()
+            log.info(f"Tabella nodi popolata: {len(records)} nodi")
+    except Exception as e:
+        log.warning(f"Errore popolamento nodi: {e}")
+        conn.rollback()
 
 # ══════════════════════════════════════════════
 # SESSION HTTP
@@ -450,7 +477,7 @@ def main():
 
     conn    = get_conn()
     session = get_session()
-
+    popola_nodi(conn, session)
     while True:
         try:
             ciclo_raccolta(conn, session)

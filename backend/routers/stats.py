@@ -20,7 +20,7 @@ def get_stats():
     profilo = dict(cur.fetchone())
 
     # Totale nodi in anagrafica
-    cur.execute("SELECT COUNT(*) as totale FROM nodi")
+    cur.execute("SELECT COUNT(*) as totale FROM profilo_nodi")
     totale = dict(cur.fetchone())
 
     # Gateway attivi

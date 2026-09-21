@@ -180,3 +180,33 @@
     height: 100%;
   }
 }
+// ── Modalità simulazione ──────────────────────────
+.side-menu.sim-mode {
+  background: #2D1F0E;
+  border-right-color: #FF8C42;
+
+  .menu-item.attivo {
+    background: rgba(255, 140, 66, 0.2);
+    border-left-color: #FF8C42;
+
+    .menu-label {
+      color: #FF8C42;
+    }
+  }
+
+  .menu-item:hover {
+    background: rgba(255, 140, 66, 0.1);
+  }
+
+.menu-legenda {
+  margin-top: auto;
+  padding: 16px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  background: inherit; // ← eredita il colore del genitore
+}
+    &::after {
+    content: '';
+    flex: 1;
+    background: #2D1F0E;
+  }
+}

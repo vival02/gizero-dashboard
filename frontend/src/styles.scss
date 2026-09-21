@@ -1,5 +1,15 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
 
+app-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: 64px;
+}
 body {
   font-family: 'Segoe UI', system-ui, sans-serif;
   background: #F4F5F7;

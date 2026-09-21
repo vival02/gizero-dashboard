@@ -1,0 +1,83 @@
+<div class="sim-panel">
+  <div class="sim-header">
+    <span class="sim-titolo">SIMULAZIONE GATEWAY</span>
+    <button class="btn-reset" (click)="resetSimulazione()">Reset</button>
+  </div>
+
+  @if (gateway.length === 0 && !risultatoCorrente) {
+    <div class="sim-banner">
+      <span class="sim-banner-icon">
+  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FF8C42" stroke-width="1.5">
+    <path d="M12 20h.01"/>
+    <path d="M2 8.82a15 15 0 0 1 20 0"/>
+    <path d="M5 12.859a10 10 0 0 1 14 0"/>
+    <path d="M8.5 16.429a5 5 0 0 1 7 0"/>
+  </svg>
+</span>
+      <span>Clicca sulla mappa per aggiungere un gateway simulato</span>
+    </div>
+  }
+
+  @if (gateway.length > 0) {
+    <div class="sim-lista">
+      @for (gw of gateway; track gw; let i = $index) {
+        <div class="sim-gw-card">
+          <div class="sim-gw-header">
+            <input class="sim-gw-nome" [(ngModel)]="gw.nome" />
+            <button class="btn-elimina" (click)="eliminaGateway(i)">✕</button>
+          </div>
+          <div class="sim-gw-coords">
+            <label>Lat <input type="number" [(ngModel)]="gw.lat" step="0.00001" /></label>
+            <label>Lon <input type="number" [(ngModel)]="gw.lon" step="0.00001" /></label>
+          </div>
+        </div>
+      }
+    </div>
+
+    <button class="btn-avvia" (click)="avviaSimulazione()" [disabled]="caricamento">
+      @if (caricamento) { ⏳ Simulazione in corso... }
+      @else { ▶ Avvia simulazione }
+    </button>
+  }
+
+  @if (risultatoCorrente) {
+    <div class="sim-risultati">
+      <div class="sim-riepilogo">
+        <div class="sim-numero">
+          <span class="numero">{{ risultatoCorrente.riepilogo.nodi_migliorati }}</span>
+          <span class="etichetta">Nodi migliorati</span>
+        </div>
+        <div class="sim-numero">
+          <span class="numero">{{ risultatoCorrente.riepilogo.nodi_critici_risolti }}</span>
+          <span class="etichetta">Critici risolti</span>
+        </div>
+        <div class="sim-numero">
+          <span class="numero">{{ risultatoCorrente.riepilogo.nodi_ridondanza_aggiunta }}</span>
+          <span class="etichetta">Ridondanza aggiunta</span>
+        </div>
+      </div>
+
+      @if (risultatoCorrente.nodi_migliorati.length > 0) {
+        <table class="sim-tabella">
+          <thead>
+            <tr><th>Nodo</th><th>I_QT prima</th><th>I_QT dopo</th><th>Gateway</th></tr>
+          </thead>
+          <tbody>
+            @for (n of risultatoCorrente.nodi_migliorati; track n) {
+              <tr>
+                <td>{{ n.nome || n.deveui }}</td>
+                <td>{{ n.iqt_prima | number:'1.2-2' }}</td>
+                <td>{{ n.iqt_dopo | number:'1.2-2' }}</td>
+                <td>{{ n.gateway }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+
+      <div class="sim-raccomandazione">
+        {{ risultatoCorrente.testo_raccomandazione }}
+      </div>
+    </div>
+  }
+</div>

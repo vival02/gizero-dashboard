@@ -7,8 +7,7 @@ import * as L from 'leaflet';
 import { ApiService, Nodo, Gateway } from '../../services/api';
 import { LayerVisibility } from '../header/header';
 
-export type Modalita = 'radio' | 'batteria' | 'struttura';
-
+export type Modalita = 'radio' | 'batteria' | 'struttura' | 'simulazione';
 const GRIGIO_TIMEOUT = '#607D8B';
 const GRIGIO_NO_BATT = '#B0BEC5';
 
@@ -22,7 +21,11 @@ export class Map implements OnChanges {
   @Input() layers: LayerVisibility = { nodi: true, gateway: true };
   @Input() mostraTimeout = false;
   @Output() nodoSelezionato = new EventEmitter<Nodo>();
+  @Output() mappaCliccata = new EventEmitter<{lat: number, lon: number}>();
+  @Input() gatewaySimulati: {nome: string, lat: number, lon: number}[] = [];
+  @Input() nodiMigliorati: string[] = [];
 
+private gatewaySimulatiLayer = L.layerGroup();
   @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef;
 
   private map!: L.Map;
@@ -37,6 +40,11 @@ constructor(private api: ApiService, private zone: NgZone, private cdr: ChangeDe
     afterNextRender(async () => {
       await import('leaflet.markercluster');
       this.inizializzaMappa();
+      this.map.on('click', (e: L.LeafletMouseEvent) => {
+      if (this.modalita === 'simulazione') {
+        this.zone.run(() => this.mappaCliccata.emit({ lat: e.latlng.lat, lon: e.latlng.lng }));
+      }
+});
       this.caricaDati();
     });
   }
@@ -45,9 +53,36 @@ constructor(private api: ApiService, private zone: NgZone, private cdr: ChangeDe
     if (this.map) {
       this.aggiornaVisibilita();
       this.aggiornaMarker();
+      this.aggiornaGatewaySimulati();
     }
   }
+  private aggiornaGatewaySimulati() {
+  this.gatewaySimulatiLayer.clearLayers();
+  if (this.modalita !== 'simulazione') return;
 
+  for (const gw of this.gatewaySimulati) {
+    const icon = L.divIcon({
+      className: '',
+      html: `<svg width="22" height="22" viewBox="0 0 22 22">
+               <polygon points="11,2 21,20 1,20"
+                 fill="#FF6D00"
+                 fill-opacity="0.9"
+                 stroke="#ffffff"
+                 stroke-width="1.5"
+                 stroke-linejoin="round"/>
+             </svg>`,
+      iconSize: [22, 22],
+      iconAnchor: [11, 20],
+    });
+    const marker = L.marker([gw.lat, gw.lon], { icon });
+    marker.bindPopup(`<div class="popup-content"><div class="popup-nome">${gw.nome}</div></div>`, {
+      closeButton: false, className: 'popup-leggero'
+    });
+    this.gatewaySimulatiLayer.addLayer(marker);
+  }
+
+  this.map.addLayer(this.gatewaySimulatiLayer);
+}
   private inizializzaMappa() {
     this.map = L.map(this.mapContainer.nativeElement, {
       center: [45.4654, 10.9997],
@@ -138,29 +173,35 @@ constructor(private api: ApiService, private zone: NgZone, private cdr: ChangeDe
 
   // ── Colori ────────────────────────────────────────────────
 
-  private coloreNodo(nodo: Nodo): string {
-    if (nodo.stato === 'TIMEOUT') return GRIGIO_TIMEOUT;
+private coloreNodo(nodo: Nodo): string {
+  if (nodo.stato === 'TIMEOUT') return GRIGIO_TIMEOUT;
 
-    switch (this.modalita) {
-      case 'radio':
-        if (nodo.stato === 'CRITICO')    return '#E53935';
-        if (nodo.stato === 'ATTENZIONE') return '#FB8C00';
-        return '#8DC63F';
+  switch (this.modalita) {
+    case 'radio':
+      if (nodo.stato === 'CRITICO')    return '#E53935';
+      if (nodo.stato === 'ATTENZIONE') return '#FB8C00';
+      return '#8DC63F';
 
-      case 'batteria':
-        if (nodo.batteria_pct == null) return GRIGIO_NO_BATT;
-        if (nodo.batteria_pct < 10)   return '#E53935';
-        if (nodo.batteria_pct < 20)   return '#FF5722';
-        if (nodo.batteria_pct < 50)   return '#FB8C00';
-        return '#8DC63F';
+    case 'batteria':
+      if (nodo.batteria_pct == null) return GRIGIO_NO_BATT;
+      if (nodo.batteria_pct < 10)   return '#E53935';
+      if (nodo.batteria_pct < 20)   return '#FF5722';
+      if (nodo.batteria_pct < 50)   return '#FB8C00';
+      return '#8DC63F';
 
-      case 'struttura':
-        const gw = nodo.n_gateway ?? 0;
-        if (gw === 0) return GRIGIO_TIMEOUT;
-        if (gw === 1) return '#E53935';
-        return '#8DC63F';
-    }
+    case 'struttura':
+      const gw = nodo.n_gateway ?? 0;
+      if (gw === 0) return GRIGIO_TIMEOUT;
+      if (gw === 1) return '#E53935';
+      return '#8DC63F';
+
+    case 'simulazione':
+      return '#8DC63F'; // colore base, verrà aggiornato dopo la simulazione
+
+    default:
+      return '#8DC63F';
   }
+}
 
   private coloreGateway(gw: Gateway): string {
     if (!gw.attivo)            return GRIGIO_TIMEOUT;

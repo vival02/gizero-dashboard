@@ -1,28 +1,28 @@
 .layout {
   display: flex;
-  height: 100vh;
-  padding-top: 64px;
+  flex: 1;
   overflow: hidden;
   background: #F4F5F7;
+  min-height: 0;
 }
+
 
 .map-container {
   flex: 1;
   position: relative;
+  overflow: hidden;
 }
-
-// Tablet
-@media (max-width: 1024px) {
-  .layout {
-    padding-top: 64px;
-  }
-}
-
-// Mobile
-@media (max-width: 768px) {
-  .layout {
-    padding-top: 56px;
-  }
+.sim-mode-banner {
+  height: 28px;
+  background: #FF6D00;
+  color: white;
+  text-align: center;
+  padding: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  z-index: 999;
+  flex-shrink: 0;
 }
 app-side-menu.menu-mobile-aperto {
   @media (max-width: 768px) {

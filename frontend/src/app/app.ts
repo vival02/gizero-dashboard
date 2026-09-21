@@ -3,10 +3,10 @@ import { Map } from './components/map/map';
 import { NodePanel } from './components/node-panel/node-panel';
 import { Header, LayerVisibility } from './components/header/header';
 import { SideMenu, Modalita } from './components/side-menu/side-menu';
-
+import { SimulazionePanel } from './components/simulazione-panel/simulazione-panel';
 @Component({
   selector: 'app-root',
-  imports: [Map, NodePanel, Header, SideMenu],
+  imports: [Map, NodePanel, Header, SideMenu, SimulazionePanel],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
@@ -15,7 +15,9 @@ export class App {
   modalita: Modalita = 'radio';
   nodoSelezionato: any = null;
   layers: LayerVisibility = { nodi: true, gateway: true };
-
+  gatewaySimulati: any[] = [];
+  nodiMigliorati: string[] = [];
+  ultimoClick: {lat: number, lon: number} | null = null;
   constructor(private cdr: ChangeDetectorRef) {}
 
   onMenuToggle() {
@@ -30,11 +32,13 @@ onTimeoutChange(v: boolean) {
 }
   onModalitaChange(m: Modalita) {
     this.modalita = m;
-    if (m === 'batteria') {
-      this.layers = { nodi: true, gateway: false };
-    } else {
-      this.layers = { nodi: true, gateway: true };
-    }
+if (m === 'batteria') {
+  this.layers = { nodi: true, gateway: false };
+} else if (m === 'simulazione') {
+  this.layers = { nodi: true, gateway: true };
+} else {
+  this.layers = { nodi: true, gateway: true };
+}
   }
 
   onNodoSelezionato(nodo: any) {
@@ -51,4 +55,28 @@ onTimeoutChange(v: boolean) {
       this.cdr.detectChanges();
     }
   }
+  onMappaCliccata(coords: {lat: number, lon: number}) {
+  if (this.modalita === 'simulazione') {
+    this.ultimoClick = coords;
+  }
+}
+
+onGatewayListChange(lista: any[]) {
+  this.gatewaySimulati = [...lista];
+  this.ultimoClick = null;
+}
+
+onSimulazioneReset() {
+  this.gatewaySimulati = [];
+  this.nodiMigliorati = [];
+  this.ultimoClick = null;
+}
+
+onRisultatiSimulazione(risultati: any) {
+  this.nodiMigliorati = risultati.nodi_migliorati.map((n: any) => n.deveui);
+}
+  onGatewayAggiunto(gateway: any) {
+  // gestito dal componente simulazione-panel
+}
+
 }

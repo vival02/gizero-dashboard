@@ -1,17 +1,19 @@
 import requests
 import psycopg2
+import os
 from psycopg2.extras import execute_values
 
-BASE_URL = "https://gizero.resiot.io/api"
-TOKEN    = "0d126be8225daa1a384f980cfc79f952"
+BASE_URL = os.environ.get("RESIOT_BASE_URL", "https://gizero.resiot.io/api")
+TOKEN    = os.environ.get("RESIOT_TOKEN", "")
 HEADERS  = {"Accept": "application/json", "Grpc-Metadata-Authorization": TOKEN}
 
 conn = psycopg2.connect(
-    host="localhost", dbname="gizero",
-    user="gizero", password="cambia_questa_password"
+    host=os.environ.get("POSTGRES_HOST", "gizero_db"),
+    dbname=os.environ.get("POSTGRES_DB", "gizero"),
+    user=os.environ.get("POSTGRES_USER", "gizero"),
+    password=os.environ.get("POSTGRES_PASSWORD", "")
 )
 
-# Scarica tutti i nodi da ResIOT
 r = requests.get(
     f"{BASE_URL}/application/nodes",
     headers=HEADERS,
@@ -20,7 +22,6 @@ r = requests.get(
 nodi = r.json().get("result", [])
 print(f"Nodi trovati: {len(nodi)}")
 
-# Salva in tabella nodi
 records = []
 for n in nodi:
     dev  = n.get("devEUI", "").upper().strip()

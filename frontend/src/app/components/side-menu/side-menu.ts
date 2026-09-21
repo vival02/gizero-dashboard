@@ -1,7 +1,7 @@
 import { Component, EventEmitter,Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-export type Modalita = 'radio' | 'batteria' | 'struttura';
+export type Modalita = 'radio' | 'batteria' | 'struttura' | 'simulazione';
 
 @Component({
   selector: 'app-side-menu',
@@ -15,22 +15,11 @@ export class SideMenu {
   modalitaAttiva: Modalita = 'radio';
 
   voci = [
-    {
-      id: 'radio' as Modalita,
-      label: 'STATO RADIO',
-      descrizione: 'RSSI e Spreading Factor'
-    },
-    {
-      id: 'batteria' as Modalita,
-      label: 'BATTERIA',
-      descrizione: 'Livello e vita residua'
-    },
-    {
-      id: 'struttura' as Modalita,
-      label: 'STRUTTURA RETE',
-      descrizione: 'Ridondanza e fragilità'
-    }
-  ];
+  { id: 'radio' as Modalita, label: 'STATO RADIO', descrizione: 'RSSI e Spreading Factor' },
+  { id: 'batteria' as Modalita, label: 'BATTERIA', descrizione: 'Livello e vita residua' },
+  { id: 'struttura' as Modalita, label: 'STRUTTURA RETE', descrizione: 'Ridondanza e fragilità' },
+  { id: 'simulazione' as Modalita, label: 'SIMULAZIONE', descrizione: 'Ottimizzazione gateway' },
+];
 
   seleziona(m: Modalita) {
     this.modalitaAttiva = m;
